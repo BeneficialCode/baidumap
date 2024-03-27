@@ -25,8 +25,13 @@ def decrypt(txt_stream,public_key):
             j += lock_len
         tmp_stream += lockstream[j]
         k += 1
-
-    return base64.b64decode(tmp_stream).decode()
+    try:
+        # base64 decode and gbk decode
+        text = base64.b64decode(tmp_stream).decode('gbk')
+    except Exception as e:
+        print("Error: ",e)
+        return None
+    return text
 
 SQLITE_FILE_HEADER = b"SQLite format 3\x00"
 
@@ -105,7 +110,7 @@ def decrypt_db(key:str,db_path,out_path):
     
 
 def main():
-    plain = decrypt("=JFSn5FpuRQDsJXptIp98p_V_eM8njyE40IE+VjSvGX==-rABrywqqyz/","fd0f892c9c")
+    plain = decrypt("=JF-J-WKsGQTAWHnBPsO/", "fd0f892c9c")
     print(plain)
 
     decrypt_db("H+^rh$cnM9Szo","new_baidumapfav.db","new_baidumapfav.decrypted.db")
