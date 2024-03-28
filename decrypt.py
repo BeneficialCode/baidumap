@@ -109,11 +109,32 @@ def decrypt_db(key:str,db_path,out_path):
         return False
     
 
+def decrypt_xml(cipher_text,signature_hash):
+    text = 'com.baidu.BaiduMap'+signature_hash
+    md5 = hashlib.md5(text.encode()).hexdigest()
+    encrypt_key = md5[:16]
+
+    # iv 是encrypt_key的逆序
+    iv = encrypt_key[::-1]
+    # base64 decode the cipher text
+    cipher_text = base64.b64decode(cipher_text)
+    # AES CBC Nopading UTF-8
+    cipher = AES.new(encrypt_key.encode(), AES.MODE_CBC, iv.encode())
+    plain = cipher.decrypt(cipher_text).decode("utf-8")
+    # base64 decode the plain text
+    plain = base64.b64decode(plain).decode("utf-8")
+    print(plain)
+    
+
 def main():
     plain = decrypt("=JF-J-WKsGQTAWHnBPsO/", "fd0f892c9c")
     print(plain)
 
     decrypt_db("H+^rh$cnM9Szo","new_baidumapfav.db","new_baidumapfav.decrypted.db")
+
+    cipher = "hwF5hvJnZCUshD/s6XVVk0U4REn0Vj+97pJ3CFYTYWY="
+    hash = 'c2b0b497d0389e6de1505e7fd8f4d539'
+    decrypt_xml(cipher,hash)
 
 if __name__ == "__main__":
     main()
